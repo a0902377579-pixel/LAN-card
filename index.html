@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>給雅嵐的祝福 ✨</title>
-  <!-- 引入彩色碎紙花特效庫 -->
+  <title>給雅嵐的專屬祝福 ✨</title>
+  <!-- 彩帶紙花特效庫 -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     * {
@@ -18,34 +18,57 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: radial-gradient(circle at center, #2e1e30 0%, #130f16 100%);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: radial-gradient(ellipse at bottom, #2b162f 0%, #150d18 60%, #0a060c 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC", "Microsoft JhengHei", Roboto, sans-serif;
       overflow-x: hidden;
-      perspective: 1200px;
-      padding: 16px;
+      perspective: 1400px;
+      padding: 20px;
+      position: relative;
     }
 
-    /* 背景柔光氛圍球 */
-    .glow-ball {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(80px);
+    /* 飄落櫻花粒子畫布 */
+    #petalCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
       pointer-events: none;
-      opacity: 0.35;
+      z-index: 1;
     }
-    .ball-1 { width: 300px; height: 300px; background: #ff758c; top: 10%; left: 10%; }
-    .ball-2 { width: 260px; height: 260px; background: #ff7eb3; bottom: 10%; right: 10%; }
 
-    /* 卡片容器 */
+    /* 背景炫光球體 */
+    .glow-sphere {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      opacity: 0.4;
+      z-index: 0;
+      animation: floatGlow 10s ease-in-out infinite alternate;
+    }
+    .sphere-1 { width: 450px; height: 450px; background: #ff758c; top: 5%; left: 10%; }
+    .sphere-2 { width: 400px; height: 400px; background: #795290; bottom: 5%; right: 10%; animation-duration: 8s; }
+    .sphere-3 { width: 300px; height: 300px; background: #ff9a8b; top: 40%; right: 25%; opacity: 0.25; }
+
+    @keyframes floatGlow {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-40px) scale(1.1); }
+    }
+
+    /* 卡片主體 (電腦端放大到 480px x 650px) */
     .card-container {
-      width: 330px;
-      height: 490px;
+      width: 480px;
+      height: 650px;
+      max-width: 92vw;
+      max-height: 88vh;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      transition: transform 0.85s cubic-bezier(0.19, 1, 0.22, 1);
       cursor: pointer;
       z-index: 10;
     }
+
     .card-container.is-open {
       transform: rotateY(-180deg);
     }
@@ -54,174 +77,275 @@
       position: absolute;
       width: 100%;
       height: 100%;
-      border-radius: 24px;
+      border-radius: 28px;
       backface-visibility: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 24px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      padding: 38px 34px;
       user-select: none;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.12);
     }
 
-    /* 正面 (封面) */
+    /* 正面 (精緻深焙金粉質感封面) */
     .card-front {
-      background: linear-gradient(145deg, #3a253d, #221626);
+      background: linear-gradient(145deg, #38213b 0%, #1e1220 100%);
       color: #fff;
       text-align: center;
       justify-content: center;
-    }
-    .front-badge {
-      display: inline-block;
-      padding: 5px 14px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 20px;
-      font-size: 12px;
-      color: #ffccd5;
-      margin-bottom: 24px;
-      letter-spacing: 1px;
-    }
-    .front-icon {
-      font-size: 60px;
-      margin-bottom: 16px;
-      animation: floatIcon 2.4s ease-in-out infinite alternate;
-    }
-    @keyframes floatIcon {
-      0% { transform: translateY(0px) scale(1); }
-      100% { transform: translateY(-8px) scale(1.05); }
-    }
-    .card-front h2 {
-      font-size: 21px;
-      color: #fff;
-      margin-bottom: 8px;
-    }
-    .card-front p {
-      font-size: 13px;
-      color: #b5a4b7;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
     }
 
-    /* 背面 (內頁) */
+    /* 封面燙金邊框裝飾 */
+    .card-front::after {
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border: 1px dashed rgba(255, 204, 213, 0.35);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+
+    .front-tag {
+      display: inline-block;
+      padding: 6px 18px;
+      background: rgba(255, 117, 140, 0.18);
+      border: 1px solid rgba(255, 117, 140, 0.4);
+      border-radius: 30px;
+      font-size: 13px;
+      color: #ffccd5;
+      margin-bottom: 30px;
+      letter-spacing: 2px;
+      font-weight: 500;
+    }
+
+    .front-icon-wrap {
+      width: 120px;
+      height: 120px;
+      background: radial-gradient(circle, rgba(255, 117, 140, 0.25) 0%, transparent 70%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 50%;
+      margin-bottom: 24px;
+      animation: pulseGlow 2.5s infinite;
+    }
+
+    .front-icon {
+      font-size: 72px;
+      animation: floatGift 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatGift {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-12px) rotate(4deg); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { transform: scale(1); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    .card-front h2 {
+      font-size: 26px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+
+    .card-front p {
+      font-size: 14px;
+      color: #caa8bf;
+      letter-spacing: 0.5px;
+    }
+
+    .click-prompt {
+      margin-top: 36px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.5);
+      background: rgba(255, 255, 255, 0.08);
+      padding: 6px 14px;
+      border-radius: 20px;
+      display: inline-block;
+    }
+
+    /* 背面 (純淨明亮內頁) */
     .card-back {
-      background: #ffffff;
-      color: #333333;
+      background: linear-gradient(160deg, #ffffff 0%, #fffbfd 100%);
+      color: #2b2b2b;
       transform: rotateY(180deg);
       text-align: left;
     }
 
-    /* 內頁小照片/頭像區 */
-    .photo-area {
-      width: 54px;
-      height: 54px;
-      border-radius: 50%;
-      overflow: hidden;
-      margin: 0 auto 8px auto;
-      border: 3px solid #ffe5ec;
+    .inner-header {
       display: flex;
       align-items: center;
-      justify-content: center;
-      background: #fff0f3;
-      font-size: 24px;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #fae3eb;
     }
-    .photo-area img {
+
+    .avatar-wrap {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: #fff0f5;
+      border: 3px solid #ffccd5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 28px;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(255, 117, 140, 0.2);
+    }
+    .avatar-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
     }
 
-    .back-header {
-      text-align: center;
-      margin-bottom: 10px;
+    .header-text h3 {
+      font-size: 20px;
+      color: #e04b78;
+      font-weight: 700;
+      margin-bottom: 3px;
     }
-    .back-header h3 {
-      font-size: 17px;
-      color: #e05688;
-      margin-bottom: 2px;
-    }
-    .back-header span {
-      font-size: 11px;
-      color: #888;
+    .header-text span {
+      font-size: 12px;
+      color: #999;
+      letter-spacing: 0.5px;
     }
 
-    /* 信件內文區 */
+    /* 信件內文：字級與行距加大，排版更優雅舒適 */
     .letter-body {
-      font-size: 13px;
-      line-height: 1.75;
-      color: #444;
-      background: #fdf8f9;
-      padding: 14px 16px;
-      border-radius: 12px;
-      border-left: 3px solid #ff758c;
+      margin: 18px 0;
+      font-size: 15.5px;
+      line-height: 1.85;
+      color: #3e3e3e;
+      background: #fff8fa;
+      padding: 22px 20px;
+      border-radius: 16px;
+      border-left: 4px solid #ff758c;
       overflow-y: auto;
-      max-height: 250px;
+      max-height: 400px;
     }
 
-    /* 音樂播放按鈕 */
-    .music-bar {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
+    .letter-body p {
+      margin-bottom: 14px;
     }
+    .letter-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* 底部功能控制列 */
+    .inner-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+    }
+
+    .date-tag {
+      font-size: 12px;
+      color: #aaa;
+    }
+
     .audio-btn {
-      padding: 7px 18px;
+      padding: 9px 20px;
       border: none;
-      border-radius: 20px;
+      border-radius: 25px;
       background: linear-gradient(135deg, #ff758c, #ff7eb3);
       color: #fff;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 12px rgba(255, 117, 140, 0.35);
-      transition: transform 0.2s;
+      gap: 8px;
+      box-shadow: 0 5px 15px rgba(255, 117, 140, 0.35);
+      transition: all 0.2s ease;
     }
     .audio-btn:hover {
-      transform: scale(1.05);
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px rgba(255, 117, 140, 0.5);
+    }
+
+    /* 手機螢幕適配 */
+    @media (max-width: 500px) {
+      .card-container {
+        width: 90vw;
+        height: 560px;
+      }
+      .card-face {
+        padding: 24px 20px;
+      }
+      .letter-body {
+        font-size: 14px;
+        line-height: 1.75;
+        padding: 16px 14px;
+      }
+      .card-front h2 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 <body>
 
+  <!-- 櫻花飄落動態畫布 -->
+  <canvas id="petalCanvas"></canvas>
+
   <!-- 背景柔光球 -->
-  <div class="glow-ball ball-1"></div>
-  <div class="glow-ball ball-2"></div>
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+  <div class="glow-sphere sphere-3"></div>
 
   <!-- 卡片主體 -->
   <div class="card-container" id="card">
     
-    <!-- 正面 (封面) -->
+    <!-- 封面 -->
     <div class="card-face card-front">
       <div>
-        <div class="front-badge">FOR YALAN</div>
-        <div class="front-icon">🎁</div>
+        <div class="front-tag">FOR YALAN · 12/25</div>
+        <div class="front-icon-wrap" style="margin: 0 auto 20px auto;">
+          <div class="front-icon">🎁</div>
+        </div>
         <h2>專屬於妳的畢業祝福</h2>
-        <p>點擊輕觸翻開卡片 ✨</p>
+        <p>每一段相遇，都是值得珍藏的風景</p>
+        <div class="click-prompt">✦ 點擊輕觸翻開卡片 ✦</div>
       </div>
     </div>
 
-    <!-- 背面 (內頁) -->
+    <!-- 內頁 -->
     <div class="card-face card-back">
       <div>
-        <!-- 照片頭像區 (資料夾有 photo.jpg 就會載入，沒有則顯示花朵圖示) -->
-        <div class="photo-area">
-          <img src="photo.jpg" alt="photo" onerror="this.style.display='none'; this.parentNode.innerText='🌸';">
-        </div>
-        
-        <div class="back-header">
-          <h3>Dear 雅嵐，畢業快樂！</h3>
-          <span>Thank you for everything ✨</span>
+        <!-- 頂部頭像與稱呼 -->
+        <div class="inner-header">
+          <div class="avatar-wrap">
+            <img src="photo.jpg" alt="photo" onerror="this.style.display='none'; this.parentNode.innerText='🌸';">
+          </div>
+          <div class="header-text">
+            <h3>Dear 雅嵐，畢業快樂！</h3>
+            <span>Thank you for all the sweet memories ✨</span>
+          </div>
         </div>
 
+        <!-- 你的定稿內文 (加大排版) -->
         <div class="letter-body">
-          轉眼間，我們居然也認識快 5 年了，時間真的過得好快，從國三那一刻到現在大二，好像只是一眨眼的事。<br><br>
-          在我的印象中，駕訓班十幾年來也換過幾個櫃檯小姐，但好像從來沒看過有這種歡送會的儀式，能讓大家今天特地為妳辦一場歡送，真的覺得妳很幸福，也代表著妳的人緣真的很好。<br><br>
-          祝福妳未來的日子一切順心、工作順利！<br>
-          記得要常常回來找我玩，打遊戲隨 call 隨到！🌻
+          <p>轉眼間，我們居然也認識快 5 年了，時間真的過得好快，從國三那一刻到現在大二，好像只是一眨眼的事。</p>
+          <p>在我的印象中，駕訓班十幾年來也換過幾個櫃檯小姐，但好像從來沒看過有這種歡送會的儀式，能讓大家今天特地為妳辦一場歡送，真的覺得妳很幸福，也代表著妳的人緣真的很好。</p>
+          <p>祝福妳未來的日子一切順心、工作順利！</p>
+          <p style="font-weight: 600; color: #d6336c;">記得要常常回來找我玩，打遊戲隨 call 隨到！🌻</p>
         </div>
       </div>
 
-      <div class="music-bar">
+      <!-- 底部控制與音樂 -->
+      <div class="inner-footer">
+        <span class="date-tag">Special Wishes</span>
         <button class="audio-btn" id="audioToggle">
           <span id="musicStateIcon">🎵</span> 音樂播放中
         </button>
@@ -230,7 +354,7 @@
 
   </div>
 
-  <!-- 背景音檔 (同資料夾放 music.mp3 會直接播放) -->
+  <!-- 背景音檔 -->
   <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
 
   <script>
@@ -250,25 +374,33 @@
       card.classList.toggle('is-open', isOpen);
 
       if (isOpen) {
-        // 噴發彩色碎紙花
-        triggerConfetti();
+        // 觸發豪華雙邊紙花瀑布
+        fireConfettiBurst();
 
-        // 翻開時播放音樂
+        // 啟動音樂
         if (!isPlaying) {
           playMusic();
         }
       }
     });
 
-    // 碎紙花特效
-    function triggerConfetti() {
+    // 雙邊彩帶紙花特效
+    function fireConfettiBurst() {
       if (typeof confetti === 'function') {
-        confetti({
-          particleCount: 75,
-          spread: 60,
-          origin: { y: 0.65 },
-          colors: ['#ff758c', '#ff7eb3', '#fcd34d', '#a7f3d0']
-        });
+        const count = 200;
+        const defaults = { origin: { y: 0.7 } };
+
+        function fire(particleRatio, opts) {
+          confetti(Object.assign({}, defaults, opts, {
+            particleCount: Math.floor(count * particleRatio)
+          }));
+        }
+
+        fire(0.25, { spread: 26, startVelocity: 55, colors: ['#ff758c', '#ffccd5'] });
+        fire(0.2, { spread: 60, colors: ['#ffd166', '#06d6a0'] });
+        fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+        fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+        fire(0.1, { spread: 120, startVelocity: 45 });
       }
     }
 
@@ -297,7 +429,7 @@
       }
     });
 
-    // 備援合成音效
+    // 備援輕柔水晶旋律
     let audioCtx = null;
     function useWebAudioFallback() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -306,8 +438,8 @@
       musicIcon.textContent = '🔊';
 
       const notes = [
-        {f: 261.63, d: 0.4}, {f: 329.63, d: 0.4}, {f: 392.00, d: 0.4}, {f: 523.25, d: 0.6},
-        {f: 440.00, d: 0.4}, {f: 392.00, d: 0.4}, {f: 349.23, d: 0.4}, {f: 392.00, d: 0.8}
+        {f: 261.63, d: 0.45}, {f: 329.63, d: 0.45}, {f: 392.00, d: 0.45}, {f: 523.25, d: 0.65},
+        {f: 440.00, d: 0.45}, {f: 392.00, d: 0.45}, {f: 349.23, d: 0.45}, {f: 392.00, d: 0.85}
       ];
 
       function playTone(freq, start, dur) {
@@ -316,7 +448,7 @@
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
         gain.gain.setValueAtTime(0.001, audioCtx.currentTime + start);
-        gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + start + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.14, audioCtx.currentTime + start + 0.04);
         gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
         osc.connect(gain);
         gain.connect(audioCtx.destination);
@@ -325,8 +457,59 @@
       }
 
       let t = 0;
-      notes.forEach(n => { playTone(n.f, t, n.d); t += n.d + 0.05; });
+      notes.forEach(n => { playTone(n.f, t, n.d); t += n.d + 0.06; });
     }
+
+    // 背景全螢幕櫻花飄落動畫邏輯
+    const canvas = document.getElementById('petalCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    });
+
+    const petals = [];
+    const petalCount = 28;
+
+    for (let i = 0; i < petalCount; i++) {
+      petals.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: Math.random() * 5 + 4,
+        d: Math.random() + 0.5,
+        dx: Math.random() * 1.5 - 0.5,
+        dy: Math.random() * 1 + 0.8,
+        tilt: Math.random() * 10,
+        tiltAngle: Math.random() * 0.08,
+        color: ['rgba(255, 192, 203, 0.4)', 'rgba(255, 182, 193, 0.35)', 'rgba(255, 240, 245, 0.3)'][Math.floor(Math.random() * 3)]
+      });
+    }
+
+    function renderPetals() {
+      ctx.clearRect(0, 0, width, height);
+      petals.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+
+        p.y += p.dy;
+        p.x += Math.sin(p.tiltAngle) + p.dx;
+        p.tiltAngle += 0.02;
+
+        if (p.y > height) {
+          p.y = -10;
+          p.x = Math.random() * width;
+        }
+        if (p.x > width) p.x = -10;
+        if (p.x < -10) p.x = width;
+      });
+      requestAnimationFrame(renderPetals);
+    }
+    renderPetals();
   </script>
 </body>
 </html>
