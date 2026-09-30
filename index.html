@@ -279,7 +279,7 @@
       opacity: 0;
     }
 
-    /* ================= 【極限橫向縱向展開】加大版四周散落元素 ================= */
+    /* ================= 【等距均勻化】四周散落元素 ================= */
     .scatter-item {
       position: fixed;
       z-index: 12;
@@ -292,65 +292,65 @@
       pointer-events: auto;
     }
 
-    /* 加大號拍立得照片卡 (320px 寬) */
+    /* 拍立得照片卡 (300px 寬，大氣適中) */
     .polaroid {
       background: rgba(255, 255, 255, 0.97);
-      padding: 16px 16px 22px 16px;
-      border-radius: 18px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.6), 0 0 30px rgba(255, 42, 122, 0.35);
+      padding: 15px 15px 20px 15px;
+      border-radius: 16px;
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.55), 0 0 25px rgba(255, 42, 122, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.9);
-      width: 320px;
+      width: 300px;
       cursor: pointer;
       transition: transform 0.35s ease, box-shadow 0.35s ease;
     }
     .polaroid:hover {
       transform: scale(1.08) rotate(0deg) !important;
-      box-shadow: 0 30px 75px rgba(255, 42, 122, 0.7);
+      box-shadow: 0 28px 70px rgba(255, 42, 122, 0.7);
       z-index: 35;
     }
     .polaroid-img {
       width: 100%;
-      height: 190px;
-      border-radius: 12px;
+      height: 180px;
+      border-radius: 10px;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 64px;
+      font-size: 60px;
       overflow: hidden;
     }
     .polaroid-caption {
-      margin-top: 14px;
+      margin-top: 12px;
       text-align: center;
       font-family: 'Caveat', cursive;
-      font-size: 26px;
+      font-size: 25px;
       color: #592544;
       font-weight: 700;
     }
 
-    /* 加大號毛玻璃資訊卡 (340px 寬) */
+    /* 毛玻璃資訊卡 (310px 寬) */
     .glass-badge-card {
       background: rgba(42, 16, 52, 0.8);
       border: 2px solid rgba(255, 117, 140, 0.55);
       backdrop-filter: blur(16px);
-      border-radius: 26px;
-      padding: 26px 24px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), inset 0 0 25px rgba(255, 117, 140, 0.15);
+      border-radius: 24px;
+      padding: 24px 22px;
+      box-shadow: 0 22px 55px rgba(0, 0, 0, 0.65), inset 0 0 20px rgba(255, 117, 140, 0.15);
       color: #fff;
-      width: 340px;
+      width: 310px;
       transition: transform 0.3s ease, border-color 0.3s;
     }
     .glass-badge-card:hover {
-      transform: scale(1.06);
+      transform: scale(1.05);
       border-color: #ff2a7a;
-      box-shadow: 0 30px 70px rgba(255, 42, 122, 0.4);
+      box-shadow: 0 28px 65px rgba(255, 42, 122, 0.4);
     }
     .glass-title {
       font-family: 'Cinzel', serif;
-      font-size: 16px;
-      letter-spacing: 2.5px;
+      font-size: 15.5px;
+      letter-spacing: 2px;
       color: #ffd6e0;
       text-transform: uppercase;
-      margin-bottom: 16px;
+      margin-bottom: 15px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -359,14 +359,14 @@
     .glass-list {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 11px;
     }
     .glass-pill {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 117, 140, 0.35);
-      padding: 12px 16px;
-      border-radius: 14px;
-      font-size: 15px;
+      padding: 11px 15px;
+      border-radius: 13px;
+      font-size: 14.5px;
       color: #ffe6ee;
       display: flex;
       align-items: center;
@@ -379,62 +379,58 @@
       transform: translateX(6px);
     }
 
-    /* ================= 貼齊左右螢幕極限邊界 (完全填滿螢幕) ================= */
-    /* 左上拍立得 */
+    /* ================= 【間隔等距調整】往回退 6% 達到黃金比例 ================= */
+    /* 左側 3 個物件 (left: 5.8%) */
     #item-left-top {
-      top: 5%;
-      left: 1.5%;
-      transform: rotate(-7deg) translateY(40px);
+      top: 6%;
+      left: 5.8%;
+      transform: rotate(-6deg) translateY(40px);
       animation: floatA 5s ease-in-out infinite alternate;
     }
-    /* 左中資訊卡 */
     #item-left-mid {
       top: 38%;
-      left: 1.5%;
+      left: 5.2%;
       transform: rotate(3deg) translateY(40px);
       animation: floatB 6s ease-in-out infinite alternate;
     }
-    /* 左下拍立得 */
     #item-left-bot {
-      bottom: 5%;
-      left: 1.5%;
+      top: 70%;
+      left: 6.2%;
       transform: rotate(-5deg) translateY(40px);
       animation: floatC 5.5s ease-in-out infinite alternate;
     }
 
-    /* 右上資訊卡 */
+    /* 右側 3 個物件 (right: 5.8%) */
     #item-right-top {
-      top: 5%;
-      right: 1.5%;
-      transform: rotate(6deg) translateY(40px);
+      top: 6%;
+      right: 5.8%;
+      transform: rotate(5deg) translateY(40px);
       animation: floatB 5.2s ease-in-out infinite alternate;
     }
-    /* 右中拍立得 */
     #item-right-mid {
       top: 38%;
-      right: 1.5%;
+      right: 5.2%;
       transform: rotate(-4deg) translateY(40px);
       animation: floatA 6.5s ease-in-out infinite alternate;
     }
-    /* 右下資訊卡 */
     #item-right-bot {
-      bottom: 5%;
-      right: 1.5%;
+      top: 70%;
+      right: 6.2%;
       transform: rotate(5deg) translateY(40px);
       animation: floatC 4.8s ease-in-out infinite alternate;
     }
 
     @keyframes floatA {
-      0% { transform: translateY(0px) rotate(-7deg); }
-      100% { transform: translateY(-20px) rotate(-4deg); }
+      0% { transform: translateY(0px) rotate(-6deg); }
+      100% { transform: translateY(-18px) rotate(-3deg); }
     }
     @keyframes floatB {
-      0% { transform: translateY(0px) rotate(4deg); }
-      100% { transform: translateY(-24px) rotate(7deg); }
+      0% { transform: translateY(0px) rotate(3deg); }
+      100% { transform: translateY(-20px) rotate(6deg); }
     }
     @keyframes floatC {
       0% { transform: translateY(0px) rotate(-5deg); }
-      100% { transform: translateY(-18px) rotate(-2deg); }
+      100% { transform: translateY(-16px) rotate(-2deg); }
     }
 
     /* ================= 【第三層】中央 700px 展開信件 ================= */
@@ -603,14 +599,16 @@
       box-shadow: 0 10px 30px rgba(255, 42, 122, 0.65);
     }
 
-    /* 當螢幕小於 1400px 時稍微縮小兩側寬度，避免與中間卡片重疊 */
-    @media (max-width: 1440px) {
-      .polaroid { width: 260px; padding: 12px 12px 18px; }
-      .polaroid-img { height: 150px; font-size: 50px; }
-      .glass-badge-card { width: 270px; padding: 18px 16px; }
+    /* 螢幕縮小時自我調適，避免與中央信件覆蓋 */
+    @media (max-width: 1560px) {
+      .polaroid { width: 250px; padding: 12px 12px 16px; }
+      .polaroid-img { height: 140px; font-size: 45px; }
+      .glass-badge-card { width: 260px; padding: 18px 16px; }
       .glass-pill { font-size: 13.5px; padding: 9px 12px; }
+      #item-left-top, #item-left-mid, #item-left-bot { left: 2.5%; }
+      #item-right-top, #item-right-mid, #item-right-bot { right: 2.5%; }
     }
-    @media (max-width: 1200px) {
+    @media (max-width: 1280px) {
       .scatter-item {
         display: none !important;
       }
@@ -667,7 +665,7 @@
     </div>
   </div>
 
-  <!-- 【左側極限邊緣散落元素】 -->
+  <!-- 【左側散落元素 (等距平衡版)】 -->
   <div class="scatter-item polaroid" id="item-left-top">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #ffd1dc, #ff9ebb);">🌸</div>
     <div class="polaroid-caption">Memories Since 2021</div>
@@ -687,7 +685,7 @@
     <div class="polaroid-caption">Keep Shining Always</div>
   </div>
 
-  <!-- 【右側極限邊緣散落元素】 -->
+  <!-- 【右側散落元素 (等距平衡版)】 -->
   <div class="scatter-item glass-badge-card" id="item-right-top">
     <div class="glass-title">✦ Next Chapter ✦</div>
     <div class="glass-list">
