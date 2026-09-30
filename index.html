@@ -733,7 +733,7 @@
     </div>
   </div>
 
-  <!-- 音樂音軌：優先讀取專案內的 music.mp3，若未上傳則自動平滑切換至高品質 Lo-Fi 純音樂 -->
+  <!-- 音樂音軌：優先讀取本地 music.mp3，若未上傳自動切換 Lo-Fi -->
   <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
 
   <script>
@@ -751,10 +751,12 @@
     let isPlaying = false;
     let fireworksLoopInterval = null;
 
-    // 高品質 Lo-Fi 純音樂備用串流源（放鬆舒服的電鋼琴與律動）
+    // 設定舒服柔和的背景音量（最高 0.22，約 22%）
+    const TARGET_MAX_VOLUME = 0.22;
+
+    // 高品質 Lo-Fi 純音樂備用串流源
     const LOFI_STREAM_URL = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3';
 
-    // 若本地找不到 music.mp3 自動接管為 Lo-Fi
     bgm.addEventListener('error', () => {
       if (bgm.src !== LOFI_STREAM_URL) {
         bgm.src = LOFI_STREAM_URL;
@@ -762,9 +764,9 @@
       }
     });
 
-    // 點擊「前往拆禮物」關閉第一層彈窗
     openGiftPromptBtn.addEventListener('click', () => {
       introModal.classList.add('hidden');
+      initAudioContext();
       bgm.load();
     });
 
@@ -772,13 +774,9 @@
     giftWrap.addEventListener('click', () => {
       giftWrap.classList.add('opening');
       
-      // 1. 噴發左右兩側碎紙花瀑布
       fireMassiveConfetti();
-
-      // 2. 開啟常駐煙火模式（每次2~3顆連續綻放）
       startContinuousFireworks();
 
-      // 3. 播放 Lo-Fi 音樂（平滑淡入）
       if (!isPlaying) {
         playMusicWithFadeIn();
       }
@@ -794,7 +792,6 @@
       }, 450);
     });
 
-    // 豪華碎紙花瀑布
     function fireMassiveConfetti() {
       if (typeof confetti === 'function') {
         const end = Date.now() + 3200;
@@ -823,7 +820,6 @@
       }
     }
 
-    // 常駐煙火秀：每次同時發射 2 ~ 3 顆不同方位的煙火
     function startContinuousFireworks() {
       if (fireworksLoopInterval) return;
 
@@ -862,7 +858,6 @@
       }
     }
 
-    // 3D 視差傾斜
     cardWrap.addEventListener('mousemove', (e) => {
       const rect = cardWrap.getBoundingClientRect();
       const x = e.clientX - rect.left - rect.width / 2;
@@ -881,7 +876,7 @@
       cardWrap.style.transition = 'none';
     });
 
-    // 音樂淡入播放
+    // 輕柔淡入至低音量 (0.22)
     function playMusicWithFadeIn() {
       bgm.volume = 0;
       const playPromise = bgm.play();
@@ -891,9 +886,9 @@
           musicIcon.textContent = '🔊';
           let vol = 0;
           const fadeTimer = setInterval(() => {
-            if (vol < 0.65) {
-              vol += 0.05;
-              bgm.volume = Math.min(vol, 0.65);
+            if (vol < TARGET_MAX_VOLUME) {
+              vol += 0.02;
+              bgm.volume = Math.min(vol, TARGET_MAX_VOLUME);
             } else {
               clearInterval(fadeTimer);
             }
@@ -902,9 +897,11 @@
           bgm.src = LOFI_STREAM_URL;
           bgm.play().then(() => {
             isPlaying = true;
-            bgm.volume = 0.65;
+            bgm.volume = TARGET_MAX_VOLUME;
             musicIcon.textContent = '🔊';
-          }).catch(() => {});
+          }).catch(() => {
+            useWebAudioFallback();
+          });
         });
       }
     }
@@ -919,12 +916,47 @@
       if (isPlaying) {
         stopMusic();
       } else {
-        bgm.volume = 0.65;
+        bgm.volume = TARGET_MAX_VOLUME;
         bgm.play();
         isPlaying = true;
         musicIcon.textContent = '🔊';
       }
     });
+
+    // Web Audio 備援（音量也調至輕柔水準）
+    let audioCtx = null;
+    function initAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+
+    function useWebAudioFallback() {
+      initAudioContext();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      isPlaying = true;
+      musicIcon.textContent = '🔊';
+
+      const notes = [
+        {f: 261.63, d: 0.45}, {f: 329.63, d: 0.45}, {f: 392.00, d: 0.45}, {f: 523.25, d: 0.65},
+        {f: 440.00, d: 0.45}, {f: 392.00, d: 0.45}, {f: 349.23, d: 0.45}, {f: 392.00, d: 0.85}
+      ];
+
+      function playTone(freq, start, dur) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+        gain.gain.setValueAtTime(0.0005, audioCtx.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(0.045, audioCtx.currentTime + start + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + start);
+        osc.stop(audioCtx.currentTime + start + dur);
+      }
+
+      let t = 0;
+      notes.forEach(n => { playTone(n.f, t, n.d); t += n.d + 0.06; });
+    }
 
     // ================= 全螢幕 Canvas 系統 =================
     const canvas = document.getElementById('effectCanvas');
@@ -998,7 +1030,6 @@
     function loop() {
       ctx.clearRect(0, 0, width, height);
 
-      // 繪製星芒
       stars.forEach(s => {
         s.alpha += s.speed;
         const currentAlpha = Math.abs(Math.sin(s.alpha));
@@ -1008,7 +1039,6 @@
         ctx.fill();
       });
 
-      // 繪製流星
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
         ctx.save();
@@ -1029,7 +1059,6 @@
         if (m.opacity <= 0 || m.x < -150) meteors.splice(i, 1);
       }
 
-      // 繪製櫻花
       petals.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
@@ -1045,7 +1074,6 @@
         if (p.x < -10) p.x = width;
       });
 
-      // 繪製煙火粒子
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const p = fireworkParticles[i];
         p.x += p.vx;
