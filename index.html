@@ -643,7 +643,7 @@
   <div class="nebula nebula-2"></div>
   <div class="nebula nebula-3"></div>
 
-  <!-- 【第一層】前導提示彈窗 (移除右上角✕，專注於中央按鈕) -->
+  <!-- 【第一層】前導提示彈窗 -->
   <div class="modal-overlay" id="introModal">
     <div class="modal-box">
       <div class="modal-badge">✦ SPECIAL GIFT ✦</div>
@@ -733,7 +733,7 @@
     </div>
   </div>
 
-  <!-- 背景音檔 -->
+  <!-- 音樂音軌：優先讀取專案內的 music.mp3，若未上傳則自動平滑切換至高品質 Lo-Fi 純音樂 -->
   <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
 
   <script>
@@ -751,10 +751,21 @@
     let isPlaying = false;
     let fireworksLoopInterval = null;
 
+    // 高品質 Lo-Fi 純音樂備用串流源（放鬆舒服的電鋼琴與律動）
+    const LOFI_STREAM_URL = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3';
+
+    // 若本地找不到 music.mp3 自動接管為 Lo-Fi
+    bgm.addEventListener('error', () => {
+      if (bgm.src !== LOFI_STREAM_URL) {
+        bgm.src = LOFI_STREAM_URL;
+        bgm.load();
+      }
+    });
+
     // 點擊「前往拆禮物」關閉第一層彈窗
     openGiftPromptBtn.addEventListener('click', () => {
       introModal.classList.add('hidden');
-      initAudioContext();
+      bgm.load();
     });
 
     // 點擊禮物盒拆箱
@@ -767,8 +778,9 @@
       // 2. 開啟常駐煙火模式（每次2~3顆連續綻放）
       startContinuousFireworks();
 
+      // 3. 播放 Lo-Fi 音樂（平滑淡入）
       if (!isPlaying) {
-        playMusic();
+        playMusicWithFadeIn();
       }
 
       setTimeout(() => {
@@ -815,18 +827,16 @@
     function startContinuousFireworks() {
       if (fireworksLoopInterval) return;
 
-      // 開箱初期連發
       for (let i = 0; i < 4; i++) {
         setTimeout(() => {
           triggerMultiFireworks(3);
         }, i * 300);
       }
 
-      // 常駐循環：每 650~950ms 隨機放 2~3 顆
       function scheduleNext() {
         const delay = Math.random() * 300 + 650;
         fireworksLoopInterval = setTimeout(() => {
-          const burstCount = Math.random() < 0.65 ? 3 : 2; // 65% 機率一次 3 顆，35% 機率 2 顆
+          const burstCount = Math.random() < 0.65 ? 3 : 2;
           triggerMultiFireworks(burstCount);
           scheduleNext();
         }, delay);
@@ -834,24 +844,18 @@
       scheduleNext();
     }
 
-    // 一次在不同區域綻放多顆煙火
     function triggerMultiFireworks(count) {
-      // 將螢幕上方劃分區塊，確保煙火不會重疊在同一點
       const zones = [
-        { minX: 0.08, maxX: 0.35 }, // 左天空
-        { minX: 0.38, maxX: 0.62 }, // 中天空
-        { minX: 0.65, maxX: 0.92 }  // 右天空
+        { minX: 0.08, maxX: 0.35 },
+        { minX: 0.38, maxX: 0.62 },
+        { minX: 0.65, maxX: 0.92 }
       ];
-      
-      // 洗牌隨機挑選區域
       const shuffledZones = zones.sort(() => 0.5 - Math.random());
 
       for (let i = 0; i < count; i++) {
         const zone = shuffledZones[i % shuffledZones.length];
         const x = (Math.random() * (zone.maxX - zone.minX) + zone.minX) * width;
-        const y = (Math.random() * 0.38 + 0.08) * height; // 頂部 8% ~ 46% 高度
-        
-        // 稍微帶 0~120ms 的自然微延遲，更有層次感
+        const y = (Math.random() * 0.38 + 0.08) * height;
         setTimeout(() => {
           createFirework(x, y);
         }, i * 70);
@@ -877,14 +881,32 @@
       cardWrap.style.transition = 'none';
     });
 
-    // 音樂控制
-    function playMusic() {
-      bgm.play().then(() => {
-        isPlaying = true;
-        musicIcon.textContent = '🔊';
-      }).catch(err => {
-        useWebAudioFallback();
-      });
+    // 音樂淡入播放
+    function playMusicWithFadeIn() {
+      bgm.volume = 0;
+      const playPromise = bgm.play();
+      if (playPromise !== undefined) {
+        playPromise.then(() => {
+          isPlaying = true;
+          musicIcon.textContent = '🔊';
+          let vol = 0;
+          const fadeTimer = setInterval(() => {
+            if (vol < 0.65) {
+              vol += 0.05;
+              bgm.volume = Math.min(vol, 0.65);
+            } else {
+              clearInterval(fadeTimer);
+            }
+          }, 80);
+        }).catch(err => {
+          bgm.src = LOFI_STREAM_URL;
+          bgm.play().then(() => {
+            isPlaying = true;
+            bgm.volume = 0.65;
+            musicIcon.textContent = '🔊';
+          }).catch(() => {});
+        });
+      }
     }
 
     function stopMusic() {
@@ -897,44 +919,12 @@
       if (isPlaying) {
         stopMusic();
       } else {
-        playMusic();
+        bgm.volume = 0.65;
+        bgm.play();
+        isPlaying = true;
+        musicIcon.textContent = '🔊';
       }
     });
-
-    // Web Audio 備援合成音
-    let audioCtx = null;
-    function initAudioContext() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
-    function useWebAudioFallback() {
-      initAudioContext();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      isPlaying = true;
-      musicIcon.textContent = '🔊';
-
-      const notes = [
-        {f: 261.63, d: 0.45}, {f: 329.63, d: 0.45}, {f: 392.00, d: 0.45}, {f: 523.25, d: 0.65},
-        {f: 440.00, d: 0.45}, {f: 392.00, d: 0.45}, {f: 349.23, d: 0.45}, {f: 392.00, d: 0.85}
-      ];
-
-      function playTone(freq, start, dur) {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
-        gain.gain.setValueAtTime(0.001, audioCtx.currentTime + start);
-        gain.gain.exponentialRampToValueAtTime(0.14, audioCtx.currentTime + start + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime + start);
-        osc.stop(audioCtx.currentTime + start + dur);
-      }
-
-      let t = 0;
-      notes.forEach(n => { playTone(n.f, t, n.d); t += n.d + 0.06; });
-    }
 
     // ================= 全螢幕 Canvas 系統 =================
     const canvas = document.getElementById('effectCanvas');
