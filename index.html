@@ -30,7 +30,7 @@
       position: relative;
     }
 
-    /* 全螢幕畫布 */
+    /* 全螢幕特效畫布 */
     #effectCanvas {
       position: fixed;
       top: 0;
@@ -279,7 +279,7 @@
       opacity: 0;
     }
 
-    /* ================= 【鏡像對稱高度校準】四周散落元素 ================= */
+    /* ================= 【四周散落元素】 ================= */
     .scatter-item {
       position: fixed;
       z-index: 12;
@@ -292,7 +292,6 @@
       pointer-events: auto;
     }
 
-    /* 拍立得照片卡 (高 250px) */
     .polaroid {
       background: rgba(255, 255, 255, 0.97);
       padding: 15px 15px 20px 15px;
@@ -328,7 +327,6 @@
       font-weight: 700;
     }
 
-    /* 毛玻璃資訊卡 (高度對齊 200px) */
     .glass-badge-card {
       background: rgba(42, 16, 52, 0.8);
       border: 2px solid rgba(255, 117, 140, 0.55);
@@ -381,8 +379,7 @@
       transform: translateX(6px);
     }
 
-    /* ================= 【座標鏡像對稱】左右頂中底完全對齊 ================= */
-    /* 頂層統一：top: 6% */
+    /* 左右頂中底鏡像對稱座標 */
     #item-left-top {
       top: 6%;
       left: 5.8%;
@@ -396,7 +393,6 @@
       animation: floatRightTop 5s ease-in-out infinite alternate;
     }
 
-    /* 中層統一：top: 38% */
     #item-left-mid {
       top: 38%;
       left: 5.2%;
@@ -410,7 +406,6 @@
       animation: floatRightMid 5.5s ease-in-out infinite alternate;
     }
 
-    /* 底層統一：top: 70% */
     #item-left-bot {
       top: 70%;
       left: 5.8%;
@@ -424,7 +419,6 @@
       animation: floatRightBot 5s ease-in-out infinite alternate;
     }
 
-    /* 左右鏡像浮動動畫 */
     @keyframes floatLeftTop {
       0% { transform: translateY(0px) rotate(-5deg); }
       100% { transform: translateY(-16px) rotate(-2deg); }
@@ -665,7 +659,7 @@
 </head>
 <body>
 
-  <!-- 全螢幕特效畫布 -->
+  <!-- 全螢幕特效畫布 (櫻花 + 流星 + 常駐煙火) -->
   <canvas id="effectCanvas"></canvas>
 
   <!-- 背景氛圍光雲 -->
@@ -684,14 +678,12 @@
     </div>
   </div>
 
-  <!-- 【左側散落元素 (高度對稱校準)】 -->
-  <!-- 左上拍立得 -->
+  <!-- 【左側散落元素】 -->
   <div class="scatter-item polaroid" id="item-left-top">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #ffd1dc, #ff9ebb);">🌸</div>
     <div class="polaroid-caption">Memories Since 2021</div>
   </div>
 
-  <!-- 左中 Timeline 時光軌跡 -->
   <div class="scatter-item glass-badge-card" id="item-left-mid">
     <div class="glass-title">✦ Timeline ✦</div>
     <div class="glass-list">
@@ -701,20 +693,17 @@
     </div>
   </div>
 
-  <!-- 左下拍立得 -->
   <div class="scatter-item polaroid" id="item-left-bot">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">🌻</div>
     <div class="polaroid-caption">Keep Shining Always</div>
   </div>
 
-  <!-- 【右側散落元素 (鏡像對稱校準)】 -->
-  <!-- 右上拍立得 -->
+  <!-- 【右側散落元素】 -->
   <div class="scatter-item polaroid" id="item-right-top">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #c3e0e5, #5885af);">🎮</div>
     <div class="polaroid-caption">Gaming Squad Forever</div>
   </div>
 
-  <!-- 右中 Next Chapter 未來章節 -->
   <div class="scatter-item glass-badge-card" id="item-right-mid">
     <div class="glass-title">✦ Next Chapter ✦</div>
     <div class="glass-list">
@@ -724,7 +713,6 @@
     </div>
   </div>
 
-  <!-- 右下拍立得 -->
   <div class="scatter-item polaroid" id="item-right-bot">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);">☕</div>
     <div class="polaroid-caption">Best Promise For You</div>
@@ -787,6 +775,7 @@
     const scatterItems = document.querySelectorAll('.scatter-item');
 
     let isPlaying = false;
+    let fireworksLoopInterval = null;
 
     // 關閉第一層彈窗
     function dismissModal() {
@@ -800,8 +789,11 @@
     giftWrap.addEventListener('click', () => {
       giftWrap.classList.add('opening');
       
+      // 1. 噴發左右兩側碎紙花瀑布
       fireMassiveConfetti();
-      triggerFireworksShow();
+
+      // 2. 開啟常駐煙火模式（持續放煙火不中斷）
+      startContinuousFireworks();
 
       if (!isPlaying) {
         playMusic();
@@ -818,10 +810,10 @@
       }, 450);
     });
 
-    // 豪華碎紙花瀑布
+    // 豪華碎紙花瀑布（約持續 3 秒後結束，由煙火接棒）
     function fireMassiveConfetti() {
       if (typeof confetti === 'function') {
-        const end = Date.now() + 3000;
+        const end = Date.now() + 3200;
         const colors = ['#ff2a7a', '#ffd166', '#7928ca', '#00dfd8', '#ffffff'];
 
         (function frame() {
@@ -847,16 +839,33 @@
       }
     }
 
-    // 煙火表演
-    function triggerFireworksShow() {
-      for (let i = 0; i < 9; i++) {
+    // 常駐不間斷煙火系統：開箱後持續定時在畫面上半部隨機綻放
+    function startContinuousFireworks() {
+      if (fireworksLoopInterval) return;
+
+      // 剛開箱時先來一波熱烈連發
+      for (let i = 0; i < 5; i++) {
         setTimeout(() => {
-          createFirework(
-            Math.random() * (width * 0.75) + (width * 0.12),
-            Math.random() * (height * 0.45) + (height * 0.08)
-          );
-        }, i * 320);
+          triggerRandomFirework();
+        }, i * 280);
       }
+
+      // 之後轉為平穩浪漫的循環：每 600~900ms 隨機發射一枚
+      function scheduleNext() {
+        const delay = Math.random() * 400 + 650;
+        fireworksLoopInterval = setTimeout(() => {
+          triggerRandomFirework();
+          scheduleNext();
+        }, delay);
+      }
+      scheduleNext();
+    }
+
+    function triggerRandomFirework() {
+      // 隨機在頂部 8% ~ 48% 的高度、全寬 8% ~ 92% 的範圍內綻放
+      const x = Math.random() * (width * 0.84) + (width * 0.08);
+      const y = Math.random() * (height * 0.40) + (height * 0.08);
+      createFirework(x, y);
     }
 
     // 3D 視差傾斜
@@ -985,23 +994,23 @@
     setInterval(spawnMeteor, 2400);
 
     const fireworkParticles = [];
-    const fwColors = ['#ff2a7a', '#ffd166', '#00dfd8', '#7928ca', '#ffffff', '#ff9ebb'];
+    const fwColors = ['#ff2a7a', '#ffd166', '#00dfd8', '#7928ca', '#ffffff', '#ff9ebb', '#ff6b8b', '#06d6a0'];
 
     function createFirework(targetX, targetY) {
-      const pCount = 70;
+      const pCount = Math.floor(Math.random() * 25) + 65;
       const color = fwColors[Math.floor(Math.random() * fwColors.length)];
       for (let i = 0; i < pCount; i++) {
         const angle = (Math.PI * 2 / pCount) * i;
-        const speed = Math.random() * 6 + 2.5;
+        const speed = Math.random() * 5.5 + 2.2;
         fireworkParticles.push({
           x: targetX,
           y: targetY,
           vx: Math.cos(angle) * speed,
           vy: Math.sin(angle) * speed,
           alpha: 1,
-          decay: Math.random() * 0.016 + 0.012,
+          decay: Math.random() * 0.015 + 0.012,
           color: color,
-          size: Math.random() * 3 + 1.5
+          size: Math.random() * 2.8 + 1.6
         });
       }
     }
@@ -1009,6 +1018,7 @@
     function loop() {
       ctx.clearRect(0, 0, width, height);
 
+      // 繪製星芒
       stars.forEach(s => {
         s.alpha += s.speed;
         const currentAlpha = Math.abs(Math.sin(s.alpha));
@@ -1018,6 +1028,7 @@
         ctx.fill();
       });
 
+      // 繪製流星
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
         ctx.save();
@@ -1038,6 +1049,7 @@
         if (m.opacity <= 0 || m.x < -150) meteors.splice(i, 1);
       }
 
+      // 繪製櫻花
       petals.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
@@ -1053,11 +1065,13 @@
         if (p.x < -10) p.x = width;
       });
 
+      // 繪製煙火粒子（加上火花尾跡微發光與重力）
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const p = fireworkParticles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.06;
+        p.vy += 0.055; // 輕微自然重力
+        p.vx *= 0.985; // 阻力減速
         p.alpha -= p.decay;
 
         if (p.alpha <= 0) {
@@ -1065,6 +1079,8 @@
         } else {
           ctx.save();
           ctx.globalAlpha = p.alpha;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = p.color;
           ctx.fillStyle = p.color;
           ctx.beginPath();
           ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
