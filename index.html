@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>給雅嵐的祝福 ✨</title>
+  <!-- 引入彩色碎紙花特效庫 -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at center, #2e1e30 0%, #130f16 100%);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      overflow-x: hidden;
+      perspective: 1200px;
+      padding: 16px;
+    }
+
+    /* 背景柔光氛圍球 */
+    .glow-ball {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+      opacity: 0.35;
+    }
+    .ball-1 { width: 300px; height: 300px; background: #ff758c; top: 10%; left: 10%; }
+    .ball-2 { width: 260px; height: 260px; background: #ff7eb3; bottom: 10%; right: 10%; }
+
+    /* 卡片容器 */
+    .card-container {
+      width: 330px;
+      height: 490px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      cursor: pointer;
+      z-index: 10;
+    }
+    .card-container.is-open {
+      transform: rotateY(-180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.12);
+      user-select: none;
+    }
+
+    /* 正面 (封面) */
+    .card-front {
+      background: linear-gradient(145deg, #3a253d, #221626);
+      color: #fff;
+      text-align: center;
+      justify-content: center;
+    }
+    .front-badge {
+      display: inline-block;
+      padding: 5px 14px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      font-size: 12px;
+      color: #ffccd5;
+      margin-bottom: 24px;
+      letter-spacing: 1px;
+    }
+    .front-icon {
+      font-size: 60px;
+      margin-bottom: 16px;
+      animation: floatIcon 2.4s ease-in-out infinite alternate;
+    }
+    @keyframes floatIcon {
+      0% { transform: translateY(0px) scale(1); }
+      100% { transform: translateY(-8px) scale(1.05); }
+    }
+    .card-front h2 {
+      font-size: 21px;
+      color: #fff;
+      margin-bottom: 8px;
+    }
+    .card-front p {
+      font-size: 13px;
+      color: #b5a4b7;
+    }
+
+    /* 背面 (內頁) */
+    .card-back {
+      background: #ffffff;
+      color: #333333;
+      transform: rotateY(180deg);
+      text-align: left;
+    }
+
+    /* 內頁小照片/頭像區 */
+    .photo-area {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      overflow: hidden;
+      margin: 0 auto 8px auto;
+      border: 3px solid #ffe5ec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff0f3;
+      font-size: 24px;
+    }
+    .photo-area img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .back-header {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .back-header h3 {
+      font-size: 17px;
+      color: #e05688;
+      margin-bottom: 2px;
+    }
+    .back-header span {
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* 信件內文區 */
+    .letter-body {
+      font-size: 13px;
+      line-height: 1.75;
+      color: #444;
+      background: #fdf8f9;
+      padding: 14px 16px;
+      border-radius: 12px;
+      border-left: 3px solid #ff758c;
+      overflow-y: auto;
+      max-height: 250px;
+    }
+
+    /* 音樂播放按鈕 */
+    .music-bar {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+    }
+    .audio-btn {
+      padding: 7px 18px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #ff758c, #ff7eb3);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(255, 117, 140, 0.35);
+      transition: transform 0.2s;
+    }
+    .audio-btn:hover {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 背景柔光球 -->
+  <div class="glow-ball ball-1"></div>
+  <div class="glow-ball ball-2"></div>
+
+  <!-- 卡片主體 -->
+  <div class="card-container" id="card">
+    
+    <!-- 正面 (封面) -->
+    <div class="card-face card-front">
+      <div>
+        <div class="front-badge">FOR YALAN</div>
+        <div class="front-icon">🎁</div>
+        <h2>專屬於妳的畢業祝福</h2>
+        <p>點擊輕觸翻開卡片 ✨</p>
+      </div>
+    </div>
+
+    <!-- 背面 (內頁) -->
+    <div class="card-face card-back">
+      <div>
+        <!-- 照片頭像區 (資料夾有 photo.jpg 就會載入，沒有則顯示花朵圖示) -->
+        <div class="photo-area">
+          <img src="photo.jpg" alt="photo" onerror="this.style.display='none'; this.parentNode.innerText='🌸';">
+        </div>
+        
+        <div class="back-header">
+          <h3>Dear 雅嵐，畢業快樂！</h3>
+          <span>Thank you for everything ✨</span>
+        </div>
+
+        <div class="letter-body">
+          轉眼間，我們居然也認識快 5 年了，時間真的過得好快，從國三那一刻到現在大二，好像只是一眨眼的事。<br><br>
+          在我的印象中，駕訓班十幾年來也換過幾個櫃檯小姐，但好像從來沒看過有這種歡送會的儀式，能讓大家今天特地為妳辦一場歡送，真的覺得妳很幸福，也代表著妳的人緣真的很好。<br><br>
+          祝福妳未來的日子一切順心、工作順利！<br>
+          記得要常常回來找我玩，打遊戲隨 call 隨到！🌻
+        </div>
+      </div>
+
+      <div class="music-bar">
+        <button class="audio-btn" id="audioToggle">
+          <span id="musicStateIcon">🎵</span> 音樂播放中
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 背景音檔 (同資料夾放 music.mp3 會直接播放) -->
+  <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
+
+  <script>
+    const card = document.getElementById('card');
+    const audioBtn = document.getElementById('audioToggle');
+    const musicIcon = document.getElementById('musicStateIcon');
+    const bgm = document.getElementById('bgm');
+
+    let isOpen = false;
+    let isPlaying = false;
+
+    // 翻轉卡片
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('#audioToggle')) return;
+
+      isOpen = !isOpen;
+      card.classList.toggle('is-open', isOpen);
+
+      if (isOpen) {
+        // 噴發彩色碎紙花
+        triggerConfetti();
+
+        // 翻開時播放音樂
+        if (!isPlaying) {
+          playMusic();
+        }
+      }
+    });
+
+    // 碎紙花特效
+    function triggerConfetti() {
+      if (typeof confetti === 'function') {
+        confetti({
+          particleCount: 75,
+          spread: 60,
+          origin: { y: 0.65 },
+          colors: ['#ff758c', '#ff7eb3', '#fcd34d', '#a7f3d0']
+        });
+      }
+    }
+
+    // 音樂控制
+    function playMusic() {
+      bgm.play().then(() => {
+        isPlaying = true;
+        musicIcon.textContent = '🔊';
+      }).catch(err => {
+        useWebAudioFallback();
+      });
+    }
+
+    function stopMusic() {
+      bgm.pause();
+      isPlaying = false;
+      musicIcon.textContent = '🔇';
+    }
+
+    audioBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (isPlaying) {
+        stopMusic();
+      } else {
+        playMusic();
+      }
+    });
+
+    // 備援合成音效
+    let audioCtx = null;
+    function useWebAudioFallback() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      isPlaying = true;
+      musicIcon.textContent = '🔊';
+
+      const notes = [
+        {f: 261.63, d: 0.4}, {f: 329.63, d: 0.4}, {f: 392.00, d: 0.4}, {f: 523.25, d: 0.6},
+        {f: 440.00, d: 0.4}, {f: 392.00, d: 0.4}, {f: 349.23, d: 0.4}, {f: 392.00, d: 0.8}
+      ];
+
+      function playTone(freq, start, dur) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
+        gain.gain.setValueAtTime(0.001, audioCtx.currentTime + start);
+        gain.gain.exponentialRampToValueAtTime(0.12, audioCtx.currentTime + start + 0.04);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(audioCtx.currentTime + start);
+        osc.stop(audioCtx.currentTime + start + dur);
+      }
+
+      let t = 0;
+      notes.forEach(n => { playTone(n.f, t, n.d); t += n.d + 0.05; });
+    }
+  </script>
+</body>
+</html>
