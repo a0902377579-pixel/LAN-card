@@ -733,8 +733,8 @@
     </div>
   </div>
 
-  <!-- 音樂音軌：優先讀取本地 music.mp3，若未上傳自動切換 Lo-Fi -->
-  <audio id="bgm" src="music.mp3" loop preload="auto"></audio>
+  <!-- 音樂音軌：加上 crossorigin 確保 Web Audio 可以控制音量 -->
+  <audio id="bgm" src="music.mp3" loop preload="auto" crossorigin="anonymous"></audio>
 
   <script>
     const introModal = document.getElementById('introModal');
@@ -751,10 +751,34 @@
     let isPlaying = false;
     let fireworksLoopInterval = null;
 
-    // 設定舒服柔和的背景音量（最高 0.22，約 22%）
-    const TARGET_MAX_VOLUME = 0.22;
+    // ================= 【音訊核心：Web Audio GainNode 強制硬體控音】 =================
+    // 目標柔和音量：0.12 (僅為原本的 12% 左右，非常輕柔不刺耳)
+    const TARGET_SOFT_VOLUME = 0.12;
 
-    // 高品質 Lo-Fi 純音樂備用串流源
+    let audioCtx = null;
+    let gainNode = null;
+    let audioSourceNode = null;
+
+    function setupAudioChain() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        gainNode = audioCtx.createGain();
+        gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime); // 起始微聲
+        gainNode.connect(audioCtx.destination);
+
+        try {
+          audioSourceNode = audioCtx.createMediaElementSource(bgm);
+          audioSourceNode.connect(gainNode);
+        } catch (e) {
+          // 若跨域或環境不支援 MediaElementSource，退回純 element volume
+        }
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+    }
+
+    // 備用 Lo-Fi 串流源
     const LOFI_STREAM_URL = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3';
 
     bgm.addEventListener('error', () => {
@@ -766,7 +790,7 @@
 
     openGiftPromptBtn.addEventListener('click', () => {
       introModal.classList.add('hidden');
-      initAudioContext();
+      setupAudioChain();
       bgm.load();
     });
 
@@ -778,7 +802,7 @@
       startContinuousFireworks();
 
       if (!isPlaying) {
-        playMusicWithFadeIn();
+        playSoftMusic();
       }
 
       setTimeout(() => {
@@ -876,29 +900,33 @@
       cardWrap.style.transition = 'none';
     });
 
-    // 輕柔淡入至低音量 (0.22)
-    function playMusicWithFadeIn() {
-      bgm.volume = 0;
+    // 雙重保險小音量播放 (GainNode + 標籤 volume)
+    function playSoftMusic() {
+      setupAudioChain();
+      
+      // 標籤直接鎖定在 0.12
+      bgm.volume = TARGET_SOFT_VOLUME;
+
       const playPromise = bgm.play();
       if (playPromise !== undefined) {
         playPromise.then(() => {
           isPlaying = true;
           musicIcon.textContent = '🔊';
-          let vol = 0;
-          const fadeTimer = setInterval(() => {
-            if (vol < TARGET_MAX_VOLUME) {
-              vol += 0.02;
-              bgm.volume = Math.min(vol, TARGET_MAX_VOLUME);
-            } else {
-              clearInterval(fadeTimer);
-            }
-          }, 80);
+          
+          // 如果 GainNode 存在，用音訊時間線平滑爬升到 0.12，絕不爆音
+          if (gainNode && audioCtx) {
+            gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
+            gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(TARGET_SOFT_VOLUME, audioCtx.currentTime + 1.2);
+          }
         }).catch(err => {
           bgm.src = LOFI_STREAM_URL;
           bgm.play().then(() => {
             isPlaying = true;
-            bgm.volume = TARGET_MAX_VOLUME;
             musicIcon.textContent = '🔊';
+            if (gainNode && audioCtx) {
+              gainNode.gain.setValueAtTime(TARGET_SOFT_VOLUME, audioCtx.currentTime);
+            }
           }).catch(() => {
             useWebAudioFallback();
           });
@@ -916,22 +944,13 @@
       if (isPlaying) {
         stopMusic();
       } else {
-        bgm.volume = TARGET_MAX_VOLUME;
-        bgm.play();
-        isPlaying = true;
-        musicIcon.textContent = '🔊';
+        playSoftMusic();
       }
     });
 
-    // Web Audio 備援（音量也調至輕柔水準）
-    let audioCtx = null;
-    function initAudioContext() {
-      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-
+    // 合成音備援（音量同樣鎖在超輕柔）
     function useWebAudioFallback() {
-      initAudioContext();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+      setupAudioChain();
       isPlaying = true;
       musicIcon.textContent = '🔊';
 
@@ -942,14 +961,14 @@
 
       function playTone(freq, start, dur) {
         const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
+        const synthGain = audioCtx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, audioCtx.currentTime + start);
-        gain.gain.setValueAtTime(0.0005, audioCtx.currentTime + start);
-        gain.gain.exponentialRampToValueAtTime(0.045, audioCtx.currentTime + start + 0.04);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
+        synthGain.gain.setValueAtTime(0.0001, audioCtx.currentTime + start);
+        synthGain.gain.exponentialRampToValueAtTime(0.025, audioCtx.currentTime + start + 0.04);
+        synthGain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + start + dur);
+        osc.connect(synthGain);
+        synthGain.connect(audioCtx.destination);
         osc.start(audioCtx.currentTime + start);
         osc.stop(audioCtx.currentTime + start + dur);
       }
@@ -1030,6 +1049,7 @@
     function loop() {
       ctx.clearRect(0, 0, width, height);
 
+      // 繪製星芒
       stars.forEach(s => {
         s.alpha += s.speed;
         const currentAlpha = Math.abs(Math.sin(s.alpha));
@@ -1039,6 +1059,7 @@
         ctx.fill();
       });
 
+      // 繪製流星
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
         ctx.save();
@@ -1059,6 +1080,7 @@
         if (m.opacity <= 0 || m.x < -150) meteors.splice(i, 1);
       }
 
+      // 繪製櫻花
       petals.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
@@ -1074,6 +1096,7 @@
         if (p.x < -10) p.x = width;
       });
 
+      // 繪製煙火粒子
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const p = fireworkParticles[i];
         p.x += p.vx;
