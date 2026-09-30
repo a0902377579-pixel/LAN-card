@@ -2,7 +2,7 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>給雅嵐的專屬禮物 ✨</title>
   <!-- 引入 Google Fonts 質感字體 -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,19 +15,31 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
       min-height: 100vh;
+      min-height: 100dvh;
       width: 100vw;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background: radial-gradient(ellipse at bottom, #2b0c36 0%, #12051a 55%, #050109 100%);
       font-family: 'Zen Maru Gothic', -apple-system, sans-serif;
       overflow-x: hidden;
+      overflow-y: auto;
       perspective: 1600px;
       position: relative;
+    }
+
+    /* 主容器（電腦版置中，手機版滾動） */
+    .main-stage {
+      min-height: 100vh;
+      min-height: 100dvh;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      padding: 40px 16px;
     }
 
     /* 全螢幕特效畫布 */
@@ -70,6 +82,7 @@
       justify-content: center;
       align-items: center;
       z-index: 999;
+      padding: 20px;
       transition: opacity 0.5s ease, visibility 0.5s;
     }
     .modal-overlay.hidden {
@@ -84,7 +97,7 @@
       background: linear-gradient(145deg, rgba(46, 17, 56, 0.95), rgba(20, 8, 25, 0.98));
       border: 1.5px solid rgba(255, 117, 140, 0.5);
       border-radius: 32px;
-      padding: 48px 36px 42px;
+      padding: 44px 30px 38px;
       text-align: center;
       color: #fff;
       position: relative;
@@ -104,34 +117,34 @@
       border-radius: 30px;
       font-size: 13px;
       color: #ffd6e0;
-      margin-bottom: 22px;
+      margin-bottom: 18px;
       letter-spacing: 2px;
       font-family: 'Cinzel', serif;
       font-weight: 700;
     }
     .modal-box h3 {
       font-family: 'Noto Serif TC', serif;
-      font-size: 27px;
+      font-size: 26px;
       font-weight: 900;
-      margin-bottom: 15px;
+      margin-bottom: 14px;
       background: linear-gradient(135deg, #ffffff 0%, #ffccd5 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       letter-spacing: 1px;
     }
     .modal-box p {
-      font-size: 16.5px;
+      font-size: 16px;
       color: #d8c2d5;
       line-height: 1.8;
-      margin-bottom: 34px;
+      margin-bottom: 30px;
     }
     .modal-action-btn {
-      padding: 15px 46px;
+      padding: 15px 44px;
       background: linear-gradient(135deg, #ff2a7a, #ff758c);
       border: none;
       border-radius: 35px;
       color: #fff;
-      font-size: 17px;
+      font-size: 16.5px;
       font-weight: 700;
       cursor: pointer;
       letter-spacing: 1.5px;
@@ -143,7 +156,7 @@
       box-shadow: 0 12px 35px rgba(255, 42, 122, 0.7);
     }
 
-    /* ================= 【第二層】大號 3D 禮物盒 ================= */
+    /* ================= 【第二層】3D 禮物盒 ================= */
     .gift-wrap {
       display: flex;
       flex-direction: column;
@@ -157,6 +170,7 @@
       opacity: 0;
       transform: scale(0.4) translateY(120px);
       pointer-events: none;
+      display: none;
     }
 
     .gift-box {
@@ -233,12 +247,12 @@
     }
 
     .gift-tip {
-      margin-top: 56px;
-      font-size: 18px;
+      margin-top: 52px;
+      font-size: 17px;
       font-weight: 700;
       color: #ffffff;
       background: linear-gradient(90deg, rgba(255, 42, 122, 0.3), rgba(121, 40, 202, 0.3));
-      padding: 12px 30px;
+      padding: 12px 28px;
       border-radius: 35px;
       border: 1.5px solid rgba(255, 117, 140, 0.6);
       animation: pulseTip 2.2s infinite;
@@ -255,7 +269,7 @@
       opacity: 0;
     }
 
-    /* ================= 【四周散落元素】 ================= */
+    /* ================= 【卡片與側邊元素共通樣式】 ================= */
     .scatter-item {
       position: fixed;
       z-index: 12;
@@ -355,71 +369,83 @@
       transform: translateX(6px);
     }
 
-    /* 左右頂中底鏡像對稱座標 */
-    #item-left-top {
-      top: 6%;
-      left: 5.8%;
-      transform: rotate(-5deg) translateY(40px);
-      animation: floatLeftTop 5s ease-in-out infinite alternate;
-    }
-    #item-right-top {
-      top: 6%;
-      right: 5.8%;
-      transform: rotate(5deg) translateY(40px);
-      animation: floatRightTop 5s ease-in-out infinite alternate;
+    /* ================= 【電腦版座標】 ================= */
+    @media (min-width: 1025px) {
+      #item-left-top {
+        top: 6%;
+        left: 5.8%;
+        transform: rotate(-5deg) translateY(40px);
+        animation: floatLeftTop 5s ease-in-out infinite alternate;
+      }
+      #item-right-top {
+        top: 6%;
+        right: 5.8%;
+        transform: rotate(5deg) translateY(40px);
+        animation: floatRightTop 5s ease-in-out infinite alternate;
+      }
+
+      #item-left-mid {
+        top: 38%;
+        left: 5.2%;
+        transform: rotate(3deg) translateY(40px);
+        animation: floatLeftMid 5.5s ease-in-out infinite alternate;
+      }
+      #item-right-mid {
+        top: 38%;
+        right: 5.2%;
+        transform: rotate(-3deg) translateY(40px);
+        animation: floatRightMid 5.5s ease-in-out infinite alternate;
+      }
+
+      #item-left-bot {
+        top: 70%;
+        left: 5.8%;
+        transform: rotate(-4deg) translateY(40px);
+        animation: floatLeftBot 5s ease-in-out infinite alternate;
+      }
+      #item-right-bot {
+        top: 70%;
+        right: 5.8%;
+        transform: rotate(4deg) translateY(40px);
+        animation: floatRightBot 5s ease-in-out infinite alternate;
+      }
+
+      @keyframes floatLeftTop {
+        0% { transform: translateY(0px) rotate(-5deg); }
+        100% { transform: translateY(-16px) rotate(-2deg); }
+      }
+      @keyframes floatRightTop {
+        0% { transform: translateY(0px) rotate(5deg); }
+        100% { transform: translateY(-16px) rotate(2deg); }
+      }
+
+      @keyframes floatLeftMid {
+        0% { transform: translateY(0px) rotate(3deg); }
+        100% { transform: translateY(-16px) rotate(5deg); }
+      }
+      @keyframes floatRightMid {
+        0% { transform: translateY(0px) rotate(-3deg); }
+        100% { transform: translateY(-16px) rotate(-5deg); }
+      }
+
+      @keyframes floatLeftBot {
+        0% { transform: translateY(0px) rotate(-4deg); }
+        100% { transform: translateY(-16px) rotate(-1deg); }
+      }
+      @keyframes floatRightBot {
+        0% { transform: translateY(0px) rotate(4deg); }
+        100% { transform: translateY(-16px) rotate(1deg); }
+      }
     }
 
-    #item-left-mid {
-      top: 38%;
-      left: 5.2%;
-      transform: rotate(3deg) translateY(40px);
-      animation: floatLeftMid 5.5s ease-in-out infinite alternate;
-    }
-    #item-right-mid {
-      top: 38%;
-      right: 5.2%;
-      transform: rotate(-3deg) translateY(40px);
-      animation: floatRightMid 5.5s ease-in-out infinite alternate;
-    }
-
-    #item-left-bot {
-      top: 70%;
-      left: 5.8%;
-      transform: rotate(-4deg) translateY(40px);
-      animation: floatLeftBot 5s ease-in-out infinite alternate;
-    }
-    #item-right-bot {
-      top: 70%;
-      right: 5.8%;
-      transform: rotate(4deg) translateY(40px);
-      animation: floatRightBot 5s ease-in-out infinite alternate;
-    }
-
-    @keyframes floatLeftTop {
-      0% { transform: translateY(0px) rotate(-5deg); }
-      100% { transform: translateY(-16px) rotate(-2deg); }
-    }
-    @keyframes floatRightTop {
-      0% { transform: translateY(0px) rotate(5deg); }
-      100% { transform: translateY(-16px) rotate(2deg); }
-    }
-
-    @keyframes floatLeftMid {
-      0% { transform: translateY(0px) rotate(3deg); }
-      100% { transform: translateY(-16px) rotate(5deg); }
-    }
-    @keyframes floatRightMid {
-      0% { transform: translateY(0px) rotate(-3deg); }
-      100% { transform: translateY(-16px) rotate(-5deg); }
-    }
-
-    @keyframes floatLeftBot {
-      0% { transform: translateY(0px) rotate(-4deg); }
-      100% { transform: translateY(-16px) rotate(-1deg); }
-    }
-    @keyframes floatRightBot {
-      0% { transform: translateY(0px) rotate(4deg); }
-      100% { transform: translateY(-16px) rotate(1deg); }
+    /* 中型筆電自適應微調 (1025px ~ 1560px) */
+    @media (min-width: 1025px) and (max-width: 1560px) {
+      .polaroid { width: 250px; height: 215px; padding: 12px 12px 16px; }
+      .polaroid-img { height: 140px; font-size: 45px; }
+      .glass-badge-card { width: 260px; height: 180px; padding: 16px 16px; }
+      .glass-pill { font-size: 13px; padding: 7px 10px; }
+      #item-left-top, #item-left-mid, #item-left-bot { left: 2.5%; }
+      #item-right-top, #item-right-mid, #item-right-bot { right: 2.5%; }
     }
 
     /* ================= 【第三層】中央 700px 展開信件 ================= */
@@ -588,47 +614,135 @@
       box-shadow: 0 10px 30px rgba(255, 42, 122, 0.65);
     }
 
-    /* 螢幕縮小時自動調適 */
-    @media (max-width: 1560px) {
-      .polaroid { width: 250px; height: 215px; padding: 12px 12px 16px; }
-      .polaroid-img { height: 140px; font-size: 45px; }
-      .glass-badge-card { width: 260px; height: 180px; padding: 16px 16px; }
-      .glass-pill { font-size: 13px; padding: 7px 10px; }
-      #item-left-top, #item-left-mid, #item-left-bot { left: 2.5%; }
-      #item-right-top, #item-right-mid, #item-right-bot { right: 2.5%; }
+    /* 手機側邊項目專屬流式包裝容器 (在電腦版時不影響原 layout) */
+    .mobile-flow-container {
+      display: contents;
     }
-    @media (max-width: 1280px) {
-      .scatter-item {
-        display: none !important;
+
+    /* =================================================================
+       【手機版極致自適應 (Mobile Responsive Media Queries)】
+       當螢幕寬度小於等於 1024px 時觸發
+       ================================================================= */
+    @media (max-width: 1024px) {
+      body {
+        perspective: none;
       }
-    }
-    @media (max-width: 768px) {
-      .card-wrap {
-        padding: 30px 22px;
+
+      .main-stage {
+        padding: 30px 14px 60px;
+        align-items: flex-start;
       }
-      .letter-body {
-        font-size: 16px;
-        line-height: 1.9;
-        padding: 22px 18px;
+
+      .main-stage.gift-mode {
+        align-items: center;
       }
-      .header-text h3 {
-        font-size: 23px;
-      }
-      .highlight-promise {
-        font-size: 16.5px;
-      }
+
+      /* 手機版禮物盒適當縮放 */
       .gift-box {
-        width: 170px;
-        height: 155px;
+        width: 175px;
+        height: 160px;
       }
       .gift-lid {
-        width: 190px;
+        width: 195px;
         height: 44px;
         left: -10px;
       }
       .gift-body {
-        width: 170px;
-        height: 145px;
+        width: 175px;
+        height: 150px;
+      }
+      .bow {
+        font-size: 50px;
+        top: -36px;
+      }
+      .gift-tip {
+        margin-top: 40px;
+        font-size: 15px;
+        padding: 10px 22px;
+      }
+
+      /* 手機版主要展開卡片 */
+      .card-wrap {
+        width: 100%;
+        max-width: 95vw;
+        padding: 32px 20px 28px;
+        border-radius: 26px;
+      }
+      .avatar-wrap {
+        width: 68px;
+        height: 68px;
+        font-size: 32px;
+      }
+      .header-text h3 {
+        font-size: 23px;
+      }
+      .header-text span {
+        font-size: 12px;
+      }
+      .letter-body {
+        font-size: 16px;
+        line-height: 2.0;
+        padding: 22px 18px;
+        margin: 20px 0 18px;
+        max-height: none;
+      }
+      .highlight-promise {
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .inner-footer {
+        flex-direction: column;
+        gap: 16px;
+        align-items: center;
+      }
+
+      /* 手機版將側邊項目轉為往下垂直流動 (不再漂在畫面外) */
+      .mobile-flow-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 95vw;
+        margin-top: 26px;
+        gap: 20px;
+      }
+
+      .scatter-item {
+        position: relative !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+        animation: none !important;
+        width: 100% !important;
+        max-width: 350px !important;
+        box-sizing: border-box;
+      }
+
+      .polaroid {
+        height: auto !important;
+        padding: 14px 14px 18px !important;
+      }
+      .polaroid-img {
+        height: 160px !important;
+        font-size: 55px !important;
+      }
+      .polaroid-caption {
+        font-size: 22px !important;
+      }
+
+      .glass-badge-card {
+        height: auto !important;
+        padding: 20px 18px !important;
+      }
+      .glass-title {
+        font-size: 15px !important;
+        margin-bottom: 12px !important;
+      }
+      .glass-pill {
+        font-size: 13.5px !important;
+        padding: 10px 12px !important;
       }
     }
   </style>
@@ -653,84 +767,102 @@
     </div>
   </div>
 
-  <!-- 【左側散落元素】 -->
-  <div class="scatter-item polaroid" id="item-left-top">
-    <div class="polaroid-img" style="background: linear-gradient(135deg, #ffd1dc, #ff9ebb);">🌸</div>
-    <div class="polaroid-caption">Memories Since 2021</div>
-  </div>
+  <div class="main-stage gift-mode" id="mainStage">
 
-  <div class="scatter-item glass-badge-card" id="item-left-mid">
-    <div class="glass-title">✦ Timeline ✦</div>
-    <div class="glass-list">
-      <div class="glass-pill">⏳ 2021 · 相遇的起點</div>
-      <div class="glass-pill">✈️ 2024 · 北海道員旅</div>
-      <div class="glass-pill">🎓 2026 · 迎向下個章節</div>
-    </div>
-  </div>
-
-  <div class="scatter-item polaroid" id="item-left-bot">
-    <div class="polaroid-img" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">🌻</div>
-    <div class="polaroid-caption">Keep Shining Always</div>
-  </div>
-
-  <!-- 【右側散落元素】 -->
-  <div class="scatter-item polaroid" id="item-right-top">
-    <div class="polaroid-img" style="background: linear-gradient(135deg, #c3e0e5, #5885af);">🎮</div>
-    <div class="polaroid-caption">Gaming Squad Forever</div>
-  </div>
-
-  <div class="scatter-item glass-badge-card" id="item-right-mid">
-    <div class="glass-title">✦ Next Chapter ✦</div>
-    <div class="glass-list">
-      <div class="glass-pill">🚀 下一站順利啟航</div>
-      <div class="glass-pill">🎉 每天充滿驚喜與好事</div>
-      <div class="glass-pill">✨ 保持聯絡，友誼長存</div>
-    </div>
-  </div>
-
-  <div class="scatter-item polaroid" id="item-right-bot">
-    <div class="polaroid-img" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);">☕</div>
-    <div class="polaroid-caption">Best Promise For You</div>
-  </div>
-
-  <!-- 【中央核心】禮物盒 -->
-  <div class="gift-wrap" id="giftWrap">
-    <div class="gift-box">
-      <div class="gift-lid">
-        <div class="bow">🎀</div>
-      </div>
-      <div class="gift-body"></div>
-    </div>
-    <div class="gift-tip">✦ 點擊開啟專屬禮物盒 ✦</div>
-  </div>
-
-  <!-- 【中央核心】700px 展開信件 -->
-  <div class="card-outer-glow" id="cardOuterGlow">
-    <div class="card-wrap" id="cardWrap">
-      <div class="inner-header">
-        <div class="avatar-wrap">
-          <img src="photo.jpg" alt="photo" onerror="this.style.display='none'; this.parentNode.innerText='🌸';">
+    <!-- 【第二層】禮物盒 -->
+    <div class="gift-wrap" id="giftWrap">
+      <div class="gift-box">
+        <div class="gift-lid">
+          <div class="bow">🎀</div>
         </div>
-        <div class="header-text">
-          <h3>Dear 雅嵐！</h3>
-          <span>Thank you for all the precious memories ✨</span>
+        <div class="gift-body"></div>
+      </div>
+      <div class="gift-tip">✦ 點擊開啟專屬禮物盒 ✦</div>
+    </div>
+
+    <!-- 內容包裝區（包含卡片與手機向下流動元素） -->
+    <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+      
+      <!-- 【中央核心】700px 展開信件 -->
+      <div class="card-outer-glow" id="cardOuterGlow">
+        <div class="card-wrap" id="cardWrap">
+          <div class="inner-header">
+            <div class="avatar-wrap">
+              <img src="photo.jpg" alt="photo" onerror="this.style.display='none'; this.parentNode.innerText='🌸';">
+            </div>
+            <div class="header-text">
+              <h3>Dear 雅嵐！</h3>
+              <span>Thank you for all the precious memories ✨</span>
+            </div>
+          </div>
+
+          <div class="letter-body">
+            <p>轉眼間，我們居然也認識快 5 年了，時間真的過得好快，從我國三到現在大二，好像只是一眨眼的事。</p>
+            <p>在我的印象中，駕訓班十幾年來也換過幾個櫃檯小姐，但好像從來沒看過有這種歡送會的儀式，能讓大家今天特地為妳辦一場歡送，真的覺得妳很幸福，也代表著妳的人緣真的很好。</p>
+            <p>祝福妳未來的日子一切順心、工作順利！</p>
+            <p><span class="highlight-promise">記得要常常回來找我玩，打遊戲隨 call 隨到！🌻</span></p>
+          </div>
+
+          <div class="inner-footer">
+            <span class="date-tag">✦ FOR YALAN · 115/09/30 ✦</span>
+            <button class="audio-btn" id="audioToggle">
+              <span id="musicStateIcon">🎵</span> 音樂播放中
+            </button>
+          </div>
         </div>
       </div>
 
-      <div class="letter-body">
-        <p>轉眼間，我們居然也認識快 5 年了，時間真的過得好快，從我國三到現在大二，好像只是一眨眼的事。</p>
-        <p>在我的印象中，駕訓班十幾年來也換過幾個櫃檯小姐，但好像從來沒看過有這種歡送會的儀式，能讓大家今天特地為妳辦一場歡送，真的覺得妳很幸福，也代表著妳的人緣真的很好。</p>
-        <p>祝福妳未來的日子一切順心、工作順利！</p>
-        <p><span class="highlight-promise">記得要常常回來找我玩，打遊戲隨 call 隨到！🌻</span></p>
+      <!-- 側邊元素 (電腦版為四周散落定位，手機版自動匯入此容器向下滾動) -->
+      <div class="mobile-flow-container">
+        
+        <!-- 左側 Timeline 時光軸 -->
+        <div class="scatter-item glass-badge-card" id="item-left-mid">
+          <div class="glass-title">✦ Timeline ✦</div>
+          <div class="glass-list">
+            <div class="glass-pill">⏳ ~2021相遇的起點</div>
+            <div class="glass-pill">🚗 ~2024北海道旅遊</div>
+            <div class="glass-pill">🎓 ~2026迎向下個章節</div>
+          </div>
+        </div>
+
+        <!-- 右側 Next Chapter -->
+        <div class="scatter-item glass-badge-card" id="item-right-mid">
+          <div class="glass-title">✦ Next Chapter ✦</div>
+          <div class="glass-list">
+            <div class="glass-pill">🚀 下一站順利啟航</div>
+            <div class="glass-pill">🎉 每天充滿驚喜與好事</div>
+            <div class="glass-pill">✨ 保持聯絡，友誼長存</div>
+          </div>
+        </div>
+
+        <!-- 拍立得 1 -->
+        <div class="scatter-item polaroid" id="item-left-top">
+          <div class="polaroid-img" style="background: linear-gradient(135deg, #ffd1dc, #ff9ebb);">🌸</div>
+          <div class="polaroid-caption">Memories Since 2021</div>
+        </div>
+
+        <!-- 拍立得 2 -->
+        <div class="scatter-item polaroid" id="item-right-top">
+          <div class="polaroid-img" style="background: linear-gradient(135deg, #c3e0e5, #5885af);">🎮</div>
+          <div class="polaroid-caption">Gaming Squad Forever</div>
+        </div>
+
+        <!-- 拍立得 3 -->
+        <div class="scatter-item polaroid" id="item-left-bot">
+          <div class="polaroid-img" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">🌻</div>
+          <div class="polaroid-caption">Keep Shining Always</div>
+        </div>
+
+        <!-- 拍立得 4 -->
+        <div class="scatter-item polaroid" id="item-right-bot">
+          <div class="polaroid-img" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);">☕</div>
+          <div class="polaroid-caption">Best Promise For You</div>
+        </div>
+
       </div>
 
-      <div class="inner-footer">
-        <span class="date-tag">✦ FOR YALAN · 115/09/30 ✦</span>
-        <button class="audio-btn" id="audioToggle">
-          <span id="musicStateIcon">🎵</span> 音樂播放中
-        </button>
-      </div>
     </div>
+
   </div>
 
   <!-- 音樂音軌：加上 crossorigin 確保 Web Audio 可以控制音量 -->
@@ -745,15 +877,15 @@
     const audioBtn = document.getElementById('audioToggle');
     const musicIcon = document.getElementById('musicStateIcon');
     const bgm = document.getElementById('bgm');
+    const mainStage = document.getElementById('mainStage');
 
     const scatterItems = document.querySelectorAll('.scatter-item');
 
     let isPlaying = false;
     let fireworksLoopInterval = null;
 
-    // ================= 【音訊核心：Web Audio GainNode 強制硬體控音】 =================
-    // 目標柔和音量：0.12 (僅為原本的 12% 左右，非常輕柔不刺耳)
-    const TARGET_SOFT_VOLUME = 0.35;
+    // ================= 【音訊核心：GainNode 控音】 =================
+    const TARGET_SOFT_VOLUME = 0.12;
 
     let audioCtx = null;
     let gainNode = null;
@@ -763,14 +895,14 @@
       if (!audioCtx) {
         audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         gainNode = audioCtx.createGain();
-        gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime); // 起始微聲
+        gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
         gainNode.connect(audioCtx.destination);
 
         try {
           audioSourceNode = audioCtx.createMediaElementSource(bgm);
           audioSourceNode.connect(gainNode);
         } catch (e) {
-          // 若跨域或環境不支援 MediaElementSource，退回純 element volume
+          // 支援 fallback
         }
       }
       if (audioCtx.state === 'suspended') {
@@ -778,7 +910,6 @@
       }
     }
 
-    // 備用 Lo-Fi 串流源
     const LOFI_STREAM_URL = 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=lofi-study-112191.mp3';
 
     bgm.addEventListener('error', () => {
@@ -807,18 +938,19 @@
 
       setTimeout(() => {
         giftWrap.classList.add('hide');
+        mainStage.classList.remove('gift-mode');
         cardOuterGlow.classList.add('show');
         scatterItems.forEach((item, index) => {
           setTimeout(() => {
             item.classList.add('show');
-          }, index * 120);
+          }, index * 100);
         });
       }, 450);
     });
 
     function fireMassiveConfetti() {
       if (typeof confetti === 'function') {
-        const end = Date.now() + 3200;
+        const end = Date.now() + 3000;
         const colors = ['#ff2a7a', '#ffd166', '#7928ca', '#00dfd8', '#ffffff'];
 
         (function frame() {
@@ -882,29 +1014,29 @@
       }
     }
 
-    cardWrap.addEventListener('mousemove', (e) => {
-      const rect = cardWrap.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-      const rotX = -(y / rect.height) * 8;
-      const rotY = (x / rect.width) * 8;
-      cardWrap.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-    });
+    // 電腦版啟用 3D 視差傾斜（手機版關閉避免卡頓）
+    if (window.innerWidth > 1024) {
+      cardWrap.addEventListener('mousemove', (e) => {
+        const rect = cardWrap.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        const rotX = -(y / rect.height) * 8;
+        const rotY = (x / rect.width) * 8;
+        cardWrap.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+      });
 
-    cardWrap.addEventListener('mouseleave', () => {
-      cardWrap.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
-      cardWrap.style.transition = 'transform 0.5s ease';
-    });
+      cardWrap.addEventListener('mouseleave', () => {
+        cardWrap.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg)';
+        cardWrap.style.transition = 'transform 0.5s ease';
+      });
 
-    cardWrap.addEventListener('mouseenter', () => {
-      cardWrap.style.transition = 'none';
-    });
+      cardWrap.addEventListener('mouseenter', () => {
+        cardWrap.style.transition = 'none';
+      });
+    }
 
-    // 雙重保險小音量播放 (GainNode + 標籤 volume)
     function playSoftMusic() {
       setupAudioChain();
-      
-      // 標籤直接鎖定在 0.12
       bgm.volume = TARGET_SOFT_VOLUME;
 
       const playPromise = bgm.play();
@@ -912,8 +1044,6 @@
         playPromise.then(() => {
           isPlaying = true;
           musicIcon.textContent = '🔊';
-          
-          // 如果 GainNode 存在，用音訊時間線平滑爬升到 0.12，絕不爆音
           if (gainNode && audioCtx) {
             gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
             gainNode.gain.setValueAtTime(0.001, audioCtx.currentTime);
@@ -948,7 +1078,6 @@
       }
     });
 
-    // 合成音備援（音量同樣鎖在超輕柔）
     function useWebAudioFallback() {
       setupAudioChain();
       isPlaying = true;
@@ -989,7 +1118,7 @@
     });
 
     const stars = [];
-    for (let i = 0; i < 55; i++) {
+    for (let i = 0; i < 50; i++) {
       stars.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -1000,7 +1129,7 @@
     }
 
     const petals = [];
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 35; i++) {
       petals.push({
         x: Math.random() * width,
         y: Math.random() * height,
@@ -1028,11 +1157,11 @@
     const fwColors = ['#ff2a7a', '#ffd166', '#00dfd8', '#7928ca', '#ffffff', '#ff9ebb', '#ff6b8b', '#06d6a0'];
 
     function createFirework(targetX, targetY) {
-      const pCount = Math.floor(Math.random() * 25) + 65;
+      const pCount = Math.floor(Math.random() * 20) + 55;
       const color = fwColors[Math.floor(Math.random() * fwColors.length)];
       for (let i = 0; i < pCount; i++) {
         const angle = (Math.PI * 2 / pCount) * i;
-        const speed = Math.random() * 5.8 + 2.5;
+        const speed = Math.random() * 5.2 + 2.2;
         fireworkParticles.push({
           x: targetX,
           y: targetY,
@@ -1041,7 +1170,7 @@
           alpha: 1,
           decay: Math.random() * 0.015 + 0.012,
           color: color,
-          size: Math.random() * 3.0 + 1.6
+          size: Math.random() * 2.8 + 1.4
         });
       }
     }
@@ -1049,7 +1178,7 @@
     function loop() {
       ctx.clearRect(0, 0, width, height);
 
-      // 繪製星芒
+      // 星星
       stars.forEach(s => {
         s.alpha += s.speed;
         const currentAlpha = Math.abs(Math.sin(s.alpha));
@@ -1059,7 +1188,7 @@
         ctx.fill();
       });
 
-      // 繪製流星
+      // 流星
       for (let i = meteors.length - 1; i >= 0; i--) {
         const m = meteors[i];
         ctx.save();
@@ -1080,7 +1209,7 @@
         if (m.opacity <= 0 || m.x < -150) meteors.splice(i, 1);
       }
 
-      // 繪製櫻花
+      // 櫻花花瓣
       petals.forEach(p => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
@@ -1096,12 +1225,12 @@
         if (p.x < -10) p.x = width;
       });
 
-      // 繪製煙火粒子
+      // 煙火
       for (let i = fireworkParticles.length - 1; i >= 0; i--) {
         const p = fireworkParticles[i];
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.055;
+        p.vy += 0.05;
         p.vx *= 0.985;
         p.alpha -= p.decay;
 
@@ -1110,7 +1239,7 @@
         } else {
           ctx.save();
           ctx.globalAlpha = p.alpha;
-          ctx.shadowBlur = 9;
+          ctx.shadowBlur = 8;
           ctx.shadowColor = p.color;
           ctx.fillStyle = p.color;
           ctx.beginPath();
