@@ -279,7 +279,7 @@
       opacity: 0;
     }
 
-    /* ================= 【等距均勻化】四周散落元素 ================= */
+    /* ================= 【鏡像對稱高度校準】四周散落元素 ================= */
     .scatter-item {
       position: fixed;
       z-index: 12;
@@ -292,7 +292,7 @@
       pointer-events: auto;
     }
 
-    /* 拍立得照片卡 (300px 寬，大氣適中) */
+    /* 拍立得照片卡 (高 250px) */
     .polaroid {
       background: rgba(255, 255, 255, 0.97);
       padding: 15px 15px 20px 15px;
@@ -300,6 +300,7 @@
       box-shadow: 0 22px 55px rgba(0, 0, 0, 0.55), 0 0 25px rgba(255, 42, 122, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.9);
       width: 300px;
+      height: 250px;
       cursor: pointer;
       transition: transform 0.35s ease, box-shadow 0.35s ease;
     }
@@ -310,7 +311,7 @@
     }
     .polaroid-img {
       width: 100%;
-      height: 180px;
+      height: 175px;
       border-radius: 10px;
       display: flex;
       justify-content: center;
@@ -319,24 +320,25 @@
       overflow: hidden;
     }
     .polaroid-caption {
-      margin-top: 12px;
+      margin-top: 10px;
       text-align: center;
       font-family: 'Caveat', cursive;
-      font-size: 25px;
+      font-size: 24px;
       color: #592544;
       font-weight: 700;
     }
 
-    /* 毛玻璃資訊卡 (310px 寬) */
+    /* 毛玻璃資訊卡 (高度對齊 200px) */
     .glass-badge-card {
       background: rgba(42, 16, 52, 0.8);
       border: 2px solid rgba(255, 117, 140, 0.55);
       backdrop-filter: blur(16px);
       border-radius: 24px;
-      padding: 24px 22px;
+      padding: 22px 22px;
       box-shadow: 0 22px 55px rgba(0, 0, 0, 0.65), inset 0 0 20px rgba(255, 117, 140, 0.15);
       color: #fff;
       width: 310px;
+      height: 200px;
       transition: transform 0.3s ease, border-color 0.3s;
     }
     .glass-badge-card:hover {
@@ -350,7 +352,7 @@
       letter-spacing: 2px;
       color: #ffd6e0;
       text-transform: uppercase;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -359,14 +361,14 @@
     .glass-list {
       display: flex;
       flex-direction: column;
-      gap: 11px;
+      gap: 10px;
     }
     .glass-pill {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 117, 140, 0.35);
-      padding: 11px 15px;
-      border-radius: 13px;
-      font-size: 14.5px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      font-size: 14px;
       color: #ffe6ee;
       display: flex;
       align-items: center;
@@ -379,58 +381,75 @@
       transform: translateX(6px);
     }
 
-    /* ================= 【間隔等距調整】往回退 6% 達到黃金比例 ================= */
-    /* 左側 3 個物件 (left: 5.8%) */
+    /* ================= 【座標鏡像對稱】左右頂中底完全對齊 ================= */
+    /* 頂層統一：top: 6% */
     #item-left-top {
       top: 6%;
       left: 5.8%;
-      transform: rotate(-6deg) translateY(40px);
-      animation: floatA 5s ease-in-out infinite alternate;
-    }
-    #item-left-mid {
-      top: 38%;
-      left: 5.2%;
-      transform: rotate(3deg) translateY(40px);
-      animation: floatB 6s ease-in-out infinite alternate;
-    }
-    #item-left-bot {
-      top: 70%;
-      left: 6.2%;
       transform: rotate(-5deg) translateY(40px);
-      animation: floatC 5.5s ease-in-out infinite alternate;
+      animation: floatLeftTop 5s ease-in-out infinite alternate;
     }
-
-    /* 右側 3 個物件 (right: 5.8%) */
     #item-right-top {
       top: 6%;
       right: 5.8%;
       transform: rotate(5deg) translateY(40px);
-      animation: floatB 5.2s ease-in-out infinite alternate;
+      animation: floatRightTop 5s ease-in-out infinite alternate;
+    }
+
+    /* 中層統一：top: 38% */
+    #item-left-mid {
+      top: 38%;
+      left: 5.2%;
+      transform: rotate(3deg) translateY(40px);
+      animation: floatLeftMid 5.5s ease-in-out infinite alternate;
     }
     #item-right-mid {
       top: 38%;
       right: 5.2%;
+      transform: rotate(-3deg) translateY(40px);
+      animation: floatRightMid 5.5s ease-in-out infinite alternate;
+    }
+
+    /* 底層統一：top: 70% */
+    #item-left-bot {
+      top: 70%;
+      left: 5.8%;
       transform: rotate(-4deg) translateY(40px);
-      animation: floatA 6.5s ease-in-out infinite alternate;
+      animation: floatLeftBot 5s ease-in-out infinite alternate;
     }
     #item-right-bot {
       top: 70%;
-      right: 6.2%;
-      transform: rotate(5deg) translateY(40px);
-      animation: floatC 4.8s ease-in-out infinite alternate;
+      right: 5.8%;
+      transform: rotate(4deg) translateY(40px);
+      animation: floatRightBot 5s ease-in-out infinite alternate;
     }
 
-    @keyframes floatA {
-      0% { transform: translateY(0px) rotate(-6deg); }
-      100% { transform: translateY(-18px) rotate(-3deg); }
-    }
-    @keyframes floatB {
-      0% { transform: translateY(0px) rotate(3deg); }
-      100% { transform: translateY(-20px) rotate(6deg); }
-    }
-    @keyframes floatC {
+    /* 左右鏡像浮動動畫（位移高度完全相同，抵消視覺差） */
+    @keyframes floatLeftTop {
       0% { transform: translateY(0px) rotate(-5deg); }
       100% { transform: translateY(-16px) rotate(-2deg); }
+    }
+    @keyframes floatRightTop {
+      0% { transform: translateY(0px) rotate(5deg); }
+      100% { transform: translateY(-16px) rotate(2deg); }
+    }
+
+    @keyframes floatLeftMid {
+      0% { transform: translateY(0px) rotate(3deg); }
+      100% { transform: translateY(-16px) rotate(5deg); }
+    }
+    @keyframes floatRightMid {
+      0% { transform: translateY(0px) rotate(-3deg); }
+      100% { transform: translateY(-16px) rotate(-5deg); }
+    }
+
+    @keyframes floatLeftBot {
+      0% { transform: translateY(0px) rotate(-4deg); }
+      100% { transform: translateY(-16px) rotate(-1deg); }
+    }
+    @keyframes floatRightBot {
+      0% { transform: translateY(0px) rotate(4deg); }
+      100% { transform: translateY(-16px) rotate(1deg); }
     }
 
     /* ================= 【第三層】中央 700px 展開信件 ================= */
@@ -599,12 +618,12 @@
       box-shadow: 0 10px 30px rgba(255, 42, 122, 0.65);
     }
 
-    /* 螢幕縮小時自我調適，避免與中央信件覆蓋 */
+    /* 螢幕縮小時自動調適 */
     @media (max-width: 1560px) {
-      .polaroid { width: 250px; padding: 12px 12px 16px; }
+      .polaroid { width: 250px; height: 215px; padding: 12px 12px 16px; }
       .polaroid-img { height: 140px; font-size: 45px; }
-      .glass-badge-card { width: 260px; padding: 18px 16px; }
-      .glass-pill { font-size: 13.5px; padding: 9px 12px; }
+      .glass-badge-card { width: 260px; height: 180px; padding: 16px 16px; }
+      .glass-pill { font-size: 13px; padding: 7px 10px; }
       #item-left-top, #item-left-mid, #item-left-bot { left: 2.5%; }
       #item-right-top, #item-right-mid, #item-right-bot { right: 2.5%; }
     }
@@ -665,12 +684,14 @@
     </div>
   </div>
 
-  <!-- 【左側散落元素 (等距平衡版)】 -->
+  <!-- 【左側散落元素 (高度對稱校準)】 -->
+  <!-- 左上拍立得 (高度 250px) -->
   <div class="scatter-item polaroid" id="item-left-top">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #ffd1dc, #ff9ebb);">🌸</div>
     <div class="polaroid-caption">Memories Since 2021</div>
   </div>
 
+  <!-- 左中時光里程碑 (高度 200px) -->
   <div class="scatter-item glass-badge-card" id="item-left-mid">
     <div class="glass-title">✦ Highlights ✦</div>
     <div class="glass-list">
@@ -680,13 +701,21 @@
     </div>
   </div>
 
+  <!-- 左下拍立得 (高度 250px) -->
   <div class="scatter-item polaroid" id="item-left-bot">
     <div class="polaroid-img" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">🌻</div>
     <div class="polaroid-caption">Keep Shining Always</div>
   </div>
 
-  <!-- 【右側散落元素 (等距平衡版)】 -->
-  <div class="scatter-item glass-badge-card" id="item-right-top">
+  <!-- 【右側散落元素 (鏡像對稱校準)】 -->
+  <!-- 右上拍立得 (高度 250px，對應左上) -->
+  <div class="scatter-item polaroid" id="item-right-top">
+    <div class="polaroid-img" style="background: linear-gradient(135deg, #c3e0e5, #5885af);">🎮</div>
+    <div class="polaroid-caption">Gaming Squad Forever</div>
+  </div>
+
+  <!-- 右中下一站寄語 (高度 200px，對應左中) -->
+  <div class="scatter-item glass-badge-card" id="item-right-mid">
     <div class="glass-title">✦ Next Chapter ✦</div>
     <div class="glass-list">
       <div class="glass-pill">🚀 下一站順利啟航</div>
@@ -695,17 +724,10 @@
     </div>
   </div>
 
-  <div class="scatter-item polaroid" id="item-right-mid">
-    <div class="polaroid-img" style="background: linear-gradient(135deg, #c3e0e5, #5885af);">🎮</div>
-    <div class="polaroid-caption">Gaming Squad Forever</div>
-  </div>
-
-  <div class="scatter-item glass-badge-card" id="item-right-bot">
-    <div class="glass-title">✦ Best Promise ✦</div>
-    <div class="glass-list">
-      <div class="glass-pill">🎮 打遊戲隨 call 隨到</div>
-      <div class="glass-pill">☕ 有空記得常常回來玩</div>
-    </div>
+  <!-- 右下拍立得 (高度 250px，對應左下) -->
+  <div class="scatter-item polaroid" id="item-right-bot">
+    <div class="polaroid-img" style="background: linear-gradient(135deg, #ffeaa7, #fab1a0);">☕</div>
+    <div class="polaroid-caption">Best Promise For You</div>
   </div>
 
   <!-- 【中央核心】禮物盒 -->
